@@ -1,4 +1,4 @@
-package com.rohanpassi.metricStreaming.aggregator;
+package com.rohanpassi.metricStreaming.transformations.aggregator;
 
 import java.util.List;
 

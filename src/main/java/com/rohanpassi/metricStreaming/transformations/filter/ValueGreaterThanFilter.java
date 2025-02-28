@@ -1,4 +1,4 @@
-package com.rohanpassi.metricStreaming.filter;
+package com.rohanpassi.metricStreaming.transformations.filter;
 
 import org.springframework.stereotype.Component;
 

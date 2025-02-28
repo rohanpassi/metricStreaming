@@ -1,4 +1,4 @@
-package com.rohanpassi.metricStreaming.grouping;
+package com.rohanpassi.metricStreaming.transformations.grouping;
 
 import java.util.List;
 import java.util.Map;

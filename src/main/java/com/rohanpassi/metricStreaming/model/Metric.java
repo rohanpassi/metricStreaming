@@ -1,12 +1,9 @@
 package com.rohanpassi.metricStreaming.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
+import lombok.Data;
 import java.time.Instant;
 
-@Getter
-@AllArgsConstructor
+@Data
 public class Metric {
     private String label;
     private int value;
