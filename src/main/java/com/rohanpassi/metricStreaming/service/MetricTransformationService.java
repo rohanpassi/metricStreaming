@@ -2,10 +2,14 @@ package com.rohanpassi.metricStreaming.service;
 
 import com.rohanpassi.metricStreaming.dto.Transformation;
 import com.rohanpassi.metricStreaming.model.Metric;
+import com.rohanpassi.metricStreaming.transformations.filter.MetricFilter;
+import com.rohanpassi.metricStreaming.transformations.filter.ValueGreaterThanFilter;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class MetricTransformationService {
@@ -32,8 +36,18 @@ public class MetricTransformationService {
     }
 
     public List<Metric> applyFilters(List<Metric> metrics, List<Map<String, Object>> filters) {
-         //Update in this function and below function to use the map
-        return metrics;
+        if (filters == null || filters.isEmpty()) {
+            return metrics;
+        }
+
+        List<MetricFilter> metricFilters = filters.stream()
+            .map(this::createFilter)
+            .collect(Collectors.toList());
+
+        return metrics.stream()
+            .filter(metric -> metricFilters.stream().allMatch(filter -> filter.apply(metric)))
+            .collect(Collectors.toList());
+
     }
 
     public Map<String, List<Metric>> applyGrouping(List<Metric> metrics, Map<String, Object> grouper) {
@@ -44,5 +58,17 @@ public class MetricTransformationService {
     public Map<String, Integer> applyAggregation(Map<String, List<Metric>> groupedMetrics, Map<String, Object> aggregator) {
         //update this function to use the map
         return Map.of();
+    }
+
+    private MetricFilter createFilter(Map<String, Object> filterConfig) {
+        String filterType = (String) filterConfig.get("filterType");
+
+        switch (filterType) {
+            case "ValueGreaterThanFilter":
+                int threshold = (int) filterConfig.get("threshold");
+                return new ValueGreaterThanFilter(threshold);
+            default:
+                throw new IllegalArgumentException("Unsupported filter type: " + filterType);
+        }
     }
 }
