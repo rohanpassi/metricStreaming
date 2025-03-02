@@ -1,6 +1,8 @@
-package com.rohanpassi.metricStreaming.transformations.filter;
+package com.rohanpassi.metricStreaming.transformations.filter.value;
 
-import com.rohanpassi.metricStreaming.model.Metric;
+import com.rohanpassi.metricStreaming.dto.Metric;
+import com.rohanpassi.metricStreaming.transformations.filter.MetricFilter;
+
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
