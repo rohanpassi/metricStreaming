@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Service
 public class MetricTransformationService {
 
-    public Object transform(List<Metric> metrics, Transformation transformation) { // updated
+    public Object transform(List<Metric> metrics, Transformation transformation) {
         switch (transformation.getOperationType()) {
             case FILTER:
                 return applyFilters(metrics, transformation.getFilters());
