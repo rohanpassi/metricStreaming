@@ -13,7 +13,6 @@ import com.rohanpassi.metricStreaming.transformations.grouping.MetricGrouper;
 import com.rohanpassi.metricStreaming.transformations.grouping.TimeGrouper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,17 +22,18 @@ import java.util.stream.Collectors;
 public class MetricTransformationService {
 
     @Autowired
+    private FilterFactory filterFactory;
+
+    @Autowired
     private TimeGrouper timeGrouper;
+
     @Autowired
     private MetricAggregator metricAggregator;
 
-    @Autowired
-    private FilterFactory filterFactory;
-
-    public Object transform(List<Metric> metrics, List<Transformation> transformations) {
+    public List<Metric> transform(List<Metric> metrics, List<Transformation> transformations) {
         List<MetricFilter> filters = new ArrayList<>();
-        List<MetricGrouper> groupers = new ArrayList<>();
-        List<MetricAggregator> aggregators = new ArrayList<>();
+        MetricGrouper grouper;
+        MetricAggregator aggregator;
 
         for(Transformation transformation : transformations){
             switch (transformation.getOperationType()){
@@ -41,36 +41,37 @@ public class MetricTransformationService {
                     filters.add(filterFactory.getFilter(transformation.getConfig()));
                     break;
                 // case GROUP:
-                //     groupers.add(createGrouper(operation.getGrouperConfig()));
+                //     grouper = createGrouper(transformation.getConfig());
                 //     break;
                 // case AGGREGATE:
-                //     aggregators.add(createAggregator(operation.getAggregatorConfig()));
+                //     aggregator = createAggregator(transformation.getConfig());
                 //     break;
                 default:
                     throw new IllegalArgumentException("Unsupported transformation type: " + transformation.getOperationType());
             }
         }
-        // Apply filters
+        //1. Apply filters
+        metrics = applyFilters(metrics, filters);
+
+        // //2. Apply grouping
+        // applyGrouping(metrics, groupers);
+
+        // //3. Apply aggregation
+        // return applyAggregation(metrics, groupers, aggregators);
+
+        return metrics;
+    }
+
+    public List<Metric> applyFilters(List<Metric> metrics, List<MetricFilter> filters) {
+        if (filters == null || filters.isEmpty()) {
+            return metrics;
+        }
+
         for (MetricFilter filter : filters) {
             metrics = metrics.stream().filter(filter::apply).collect(Collectors.toList());
         }
         return metrics;
     }
-
-    // public List<Metric> applyFilters(List<Metric> metrics, List<Map<String, Object>> filters) {
-    //     if (filters == null || filters.isEmpty()) {
-    //         return metrics;
-    //     }
-
-    //     List<MetricFilter> metricFilters = filters.stream()
-    //             .map(this::createFilter)
-    //             .collect(Collectors.toList());
-
-    //     return metrics.stream()
-    //             .filter(metric -> metricFilters.stream().allMatch(filter -> filter.apply(metric)))
-    //             .collect(Collectors.toList());
-
-    // }
 
     public Map<String, List<Metric>> applyGrouping(List<Metric> metrics, Map<String, Object> grouperConfig) {
         if (grouperConfig == null || grouperConfig.isEmpty()) {
@@ -115,6 +116,7 @@ public class MetricTransformationService {
                 throw new IllegalArgumentException("Unsupported filter type: " + filterType);
         }
     }
+
     private MetricGrouper createGrouper(Map<String, Object> grouperConfig){
         String grouperType = (String) grouperConfig.get("grouperType");
         switch (grouperType){
@@ -124,6 +126,7 @@ public class MetricTransformationService {
                 throw new IllegalArgumentException("Unsupported grouper type: " + grouperType);
         }
     }
+
     private MetricAggregator createAggregator(Map<String, Object> aggregatorConfig){
         String aggregatorType = (String) aggregatorConfig.get("aggregatorType");
         switch (aggregatorType){
