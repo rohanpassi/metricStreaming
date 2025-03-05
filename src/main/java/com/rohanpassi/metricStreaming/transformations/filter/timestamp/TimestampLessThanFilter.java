@@ -1,6 +1,6 @@
 package com.rohanpassi.metricStreaming.transformations.filter.timestamp;
 
-import com.rohanpassi.metricStreaming.config.TimestampFilterConfig;
+import com.rohanpassi.metricStreaming.config.filter.TimestampFilterConfig;
 import com.rohanpassi.metricStreaming.dto.Metric;
 import com.rohanpassi.metricStreaming.transformations.filter.MetricFilter;
 

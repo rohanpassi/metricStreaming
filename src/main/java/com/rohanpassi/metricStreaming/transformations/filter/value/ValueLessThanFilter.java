@@ -1,6 +1,6 @@
 package com.rohanpassi.metricStreaming.transformations.filter.value;
 
-import com.rohanpassi.metricStreaming.config.ValueFilterConfig;
+import com.rohanpassi.metricStreaming.config.filter.ValueFilterConfig;
 import com.rohanpassi.metricStreaming.dto.Metric;
 import com.rohanpassi.metricStreaming.transformations.filter.MetricFilter;
 

@@ -1,4 +1,4 @@
-package com.rohanpassi.metricStreaming.config;
+package com.rohanpassi.metricStreaming.config.filter;
 
 import lombok.Data;
 

@@ -3,10 +3,11 @@ package com.rohanpassi.metricStreaming.transformations.filter;
 import java.time.Instant;
 import java.util.Map;
 import org.springframework.stereotype.Component;
-import com.rohanpassi.metricStreaming.config.FilterType;
-import com.rohanpassi.metricStreaming.config.FilterTarget;
-import com.rohanpassi.metricStreaming.config.TimestampFilterConfig;
-import com.rohanpassi.metricStreaming.config.ValueFilterConfig;
+
+import com.rohanpassi.metricStreaming.config.filter.FilterTarget;
+import com.rohanpassi.metricStreaming.config.filter.FilterType;
+import com.rohanpassi.metricStreaming.config.filter.TimestampFilterConfig;
+import com.rohanpassi.metricStreaming.config.filter.ValueFilterConfig;
 import com.rohanpassi.metricStreaming.transformations.filter.timestamp.TimestampEqualsFilter;
 import com.rohanpassi.metricStreaming.transformations.filter.timestamp.TimestampGreaterThanEqualsFilter;
 import com.rohanpassi.metricStreaming.transformations.filter.timestamp.TimestampGreaterThanFilter;

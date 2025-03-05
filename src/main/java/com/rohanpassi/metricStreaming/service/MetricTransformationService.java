@@ -1,16 +1,12 @@
 package com.rohanpassi.metricStreaming.service;
 
-import com.rohanpassi.metricStreaming.config.FilterConfig;
-import com.rohanpassi.metricStreaming.config.FilterType;
-import com.rohanpassi.metricStreaming.config.ValueFilterConfig;
 import com.rohanpassi.metricStreaming.dto.Metric;
 import com.rohanpassi.metricStreaming.dto.Transformation;
 import com.rohanpassi.metricStreaming.transformations.aggregator.MetricAggregator;
 import com.rohanpassi.metricStreaming.transformations.filter.FilterFactory;
 import com.rohanpassi.metricStreaming.transformations.filter.MetricFilter;
-import com.rohanpassi.metricStreaming.transformations.filter.value.ValueGreaterThanFilter;
+import com.rohanpassi.metricStreaming.transformations.grouping.GrouperFactory;
 import com.rohanpassi.metricStreaming.transformations.grouping.MetricGrouper;
-import com.rohanpassi.metricStreaming.transformations.grouping.TimeGrouper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -25,7 +21,7 @@ public class MetricTransformationService {
     private FilterFactory filterFactory;
 
     @Autowired
-    private TimeGrouper timeGrouper;
+    private GrouperFactory grouperFactory;
 
     @Autowired
     private MetricAggregator metricAggregator;
@@ -40,9 +36,9 @@ public class MetricTransformationService {
                 case FILTER:
                     filters.add(filterFactory.getFilter(transformation.getConfig()));
                     break;
-                // case GROUP:
-                //     grouper = createGrouper(transformation.getConfig());
-                //     break;
+                case GROUP:
+                    grouper = grouperFactory.getGrouper(transformation.getConfig());
+                    break;
                 // case AGGREGATE:
                 //     aggregator = createAggregator(transformation.getConfig());
                 //     break;
@@ -53,8 +49,9 @@ public class MetricTransformationService {
         //1. Apply filters
         metrics = applyFilters(metrics, filters);
 
-        // //2. Apply grouping
-        // applyGrouping(metrics, groupers);
+        //2. Apply grouping
+        Map<String, List<Metric>> groupedMetrics = applyGrouping(metrics, grouper);
+        // metrics = groupedMetrics.values().stream().flatMap(List::stream).collect(Collectors.toList());
 
         // //3. Apply aggregation
         // return applyAggregation(metrics, groupers, aggregators);
@@ -73,67 +70,17 @@ public class MetricTransformationService {
         return metrics;
     }
 
-    public Map<String, List<Metric>> applyGrouping(List<Metric> metrics, Map<String, Object> grouperConfig) {
-        if (grouperConfig == null || grouperConfig.isEmpty()) {
+    public Map<String, List<Metric>> applyGrouping(List<Metric> metrics, MetricGrouper grouper) {
+        if (grouper == null) {
             return Map.of("default", metrics); // Treat all metrics as one group
         }
-        MetricGrouper grouper = createGrouper(grouperConfig);
         return grouper.group(metrics);
     }
 
-    public Object applyAggregation(List<Metric> metrics, Map<String, Object> grouperConfig, Map<String, Object> aggregatorConfig) {
-        if (aggregatorConfig == null || aggregatorConfig.isEmpty()) {
-            return Map.of(); // Or handle no aggregation differently
+    public Object applyAggregation(List<Metric> metrics, MetricAggregator aggregator) {
+        if (aggregator == null) {
+            return Map.of(); // Return empty map if no aggregator is provided
         }
-        MetricAggregator aggregator = createAggregator(aggregatorConfig);
-        if (grouperConfig != null && !grouperConfig.isEmpty()) {
-            Map<String, List<Metric>> groupedMetrics = applyGrouping(metrics, grouperConfig);
-            return aggregator.aggregate(groupedMetrics);
-        } else {
-            //if there is no grouping and there is aggregation
-            return aggregator.aggregate(metrics);
-        }
-    }
-
-    private MetricFilter createFilter(FilterConfig filterConfig) {
-
-        if (filterConfig == null) {
-            throw new IllegalArgumentException("Filter config cannot be null");
-        }
-        if (filterConfig.getFilterType() == null) {
-            throw new IllegalArgumentException("Filter type cannot be null");
-        }
-        if (filterConfig.getFilterTarget() == null) {
-            throw new IllegalArgumentException("Filter target cannot be null");
-        }
-
-        FilterType filterType = filterConfig.getFilterType();
-        switch (filterConfig.getFilterType()) {
-            case GT:
-                // int threshold = (int) filterConfig.get("threshold");
-                return new ValueGreaterThanFilter((ValueFilterConfig) filterConfig);
-            default:
-                throw new IllegalArgumentException("Unsupported filter type: " + filterType);
-        }
-    }
-
-    private MetricGrouper createGrouper(Map<String, Object> grouperConfig){
-        String grouperType = (String) grouperConfig.get("grouperType");
-        switch (grouperType){
-            case "TimeGrouper":
-                return timeGrouper;
-            default:
-                throw new IllegalArgumentException("Unsupported grouper type: " + grouperType);
-        }
-    }
-
-    private MetricAggregator createAggregator(Map<String, Object> aggregatorConfig){
-        String aggregatorType = (String) aggregatorConfig.get("aggregatorType");
-        switch (aggregatorType){
-            case "SumAggregator":
-                return metricAggregator;
-            default:
-                throw new IllegalArgumentException("Unsupported aggregator type: " + aggregatorType);
-        }
+        return aggregator.aggregate(metrics);
     }
 }
