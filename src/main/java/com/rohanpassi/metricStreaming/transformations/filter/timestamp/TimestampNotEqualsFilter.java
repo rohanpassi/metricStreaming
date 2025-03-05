@@ -1,5 +1,6 @@
 package com.rohanpassi.metricStreaming.transformations.filter.timestamp;
 
+import com.rohanpassi.metricStreaming.config.TimestampFilterConfig;
 import com.rohanpassi.metricStreaming.dto.Metric;
 import com.rohanpassi.metricStreaming.transformations.filter.MetricFilter;
 
@@ -14,5 +15,9 @@ public class TimestampNotEqualsFilter implements MetricFilter {
     @Override
     public boolean apply(Metric metric) {
         return metric.getTimestamp().isAfter(timestamp) || metric.getTimestamp().isBefore(timestamp);
+    }
+
+    public TimestampNotEqualsFilter(TimestampFilterConfig config) {
+        this.timestamp = config.getTimestamp();
     }
 }

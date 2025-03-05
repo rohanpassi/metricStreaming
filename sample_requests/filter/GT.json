@@ -46,13 +46,18 @@
         }
       }
     ],
-    "transformation": {
-      "operationType": "FILTER",
-      "filters": [
-        {
-          "filterType": "ValueGreaterThanFilter",
-          "threshold": 80
-        }
-      ]
-    }
+    "transformations": [
+      {
+        "operationType": "FILTER",
+        "filterType": "GT",
+        "filterTarget": "VALUE",
+        "threshold": 80
+      },
+      {
+        "operationType": "FILTER",
+        "filterType": "LT",
+        "filterTarget": "VALUE",
+        "threshold": 90
+      }
+    ]
   }

@@ -12,61 +12,70 @@ post {
 
 body:json {
   {
-    "metrics": [
-      {
-        "name": "cpu_usage",
-        "timestamp": 1678886400,
-        "value": 85,
-        "tags": {
-          "host": "server1",
-          "datacenter": "dc1"
-        }
-      },
-      {
-        "name": "cpu_usage",
-        "timestamp": 1678886460,
-        "value": 92,
-        "tags": {
-          "host": "server2",
-          "datacenter": "dc1"
-        }
-      },
-      {
-        "name": "cpu_usage",
-        "timestamp": 1678886520,
-        "value": 70,
-        "tags": {
-          "host": "server1",
-          "datacenter": "dc1"
-        }
-      },
-      {
-        "name": "memory_usage",
-        "timestamp": 1678886400,
-        "value": 60,
-        "tags": {
-          "host": "server1",
-          "datacenter": "dc1"
-        }
-      },
-      {
-        "name": "memory_usage",
-        "timestamp": 1678886460,
-        "value": 75,
-        "tags": {
-          "host": "server2",
-          "datacenter": "dc1"
-        }
-      }
-    ],
-    "transformation": {
-      "operationType": "FILTER",
-      "filters": [
+      "metrics": [
         {
-          "filterType": "ValueGreaterThanFilter",
-          "threshold": 80
+          "name": "cpu_usage",
+          "timestamp": 1678886400,
+          "value": 85,
+          "tags": {
+            "host": "server1",
+            "datacenter": "dc1"
+          }
+        },
+        {
+          "name": "cpu_usage",
+          "timestamp": 1678886460,
+          "value": 92,
+          "tags": {
+            "host": "server2",
+            "datacenter": "dc1"
+          }
+        },
+        {
+          "name": "cpu_usage",
+          "timestamp": 1678886520,
+          "value": 70,
+          "tags": {
+            "host": "server1",
+            "datacenter": "dc1"
+          }
+        },
+        {
+          "name": "memory_usage",
+          "timestamp": 1678886400,
+          "value": 60,
+          "tags": {
+            "host": "server1",
+            "datacenter": "dc1"
+          }
+        },
+        {
+          "name": "memory_usage",
+          "timestamp": 1678886460,
+          "value": 75,
+          "tags": {
+            "host": "server2",
+            "datacenter": "dc1"
+          }
+        }
+      ],
+      "transformations": [
+        {
+          "operationType": "FILTER",
+          "config": {
+            "filterType": "GT",
+            "filterTarget": "VALUE",
+            "threshold": 80
+          }
+        },
+        {
+          "operationType": "FILTER",
+          "config": {
+            "filterType": "LT",
+            "filterTarget": "VALUE",
+            "threshold": 90
+          }
         }
       ]
     }
-  }
 }

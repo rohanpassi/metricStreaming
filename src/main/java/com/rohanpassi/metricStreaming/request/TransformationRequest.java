@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 public class TransformationRequest {
-    private List<Metric> metrics;
-    private Transformation transformation;
+    private final List<Metric> metrics;
+    private final List<Transformation> transformations;
 }
 

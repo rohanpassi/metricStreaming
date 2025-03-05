@@ -14,6 +14,6 @@ public class MetricTransformationController {
 
     @PostMapping("/transform")
     public Object transformMetrics(@RequestBody TransformationRequest request) {
-        return metricTransformationService.transform(request.getMetrics(), request.getTransformation());
+        return metricTransformationService.transform(request.getMetrics(), request.getTransformations());
     }
 }
