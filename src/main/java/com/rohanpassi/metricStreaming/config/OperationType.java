@@ -1,4 +1,4 @@
-package com.rohanpassi.metricStreaming.dto;
+package com.rohanpassi.metricStreaming.config;
 
 public enum OperationType {
     FILTER,

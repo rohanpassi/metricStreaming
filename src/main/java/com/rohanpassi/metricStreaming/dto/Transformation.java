@@ -1,6 +1,9 @@
 package com.rohanpassi.metricStreaming.dto;
 
 import java.util.Map;
+
+import com.rohanpassi.metricStreaming.config.OperationType;
+
 import lombok.Data;
 
 @Data
