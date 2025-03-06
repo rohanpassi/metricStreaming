@@ -44,5 +44,6 @@ docker run --name metric-streaming-app-container --rm -p 8080:8080 metric-stream
 - Object return type is used to keep the application simple and save time.
 - Very limited Unit tests: Due to lack of time.
 - Integration tests: Due to lack of time.
+- Exception handling: Due to lack of time.
 - Multiple aggregators and groupers.
 - No DB integration.
