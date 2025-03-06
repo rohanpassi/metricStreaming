@@ -78,6 +78,7 @@ public class MetricTransformationService {
         return grouper.group(metrics);
     }
 
+    @SuppressWarnings("unchecked")
     public Object applyAggregation(Object metrics, MetricAggregator aggregator) {
         if(metrics instanceof List){
             if(aggregator == null){
