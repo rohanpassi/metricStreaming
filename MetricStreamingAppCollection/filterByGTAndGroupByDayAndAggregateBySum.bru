@@ -1,0 +1,65 @@
+meta {
+  name: filterByGTAndGroupByDayAndAggregateBySum
+  type: http
+  seq: 7
+}
+
+post {
+  url: http://localhost:8080/transform
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "metrics": [
+      {
+        "name": "cpu_usage",
+        "value": 80,
+        "timestamp": "2023-10-27T10:00:00Z"
+      },
+      {
+        "name": "cpu_usage",
+        "value": 85,
+        "timestamp": "2023-10-27T10:15:00Z"
+      },
+      {
+        "name": "cpu_usage",
+        "value": 70,
+        "timestamp": "2023-10-27T11:00:00Z"
+      },
+      {
+        "name": "cpu_usage",
+        "value": 75,
+        "timestamp": "2023-10-28T09:00:00Z"
+      },
+      {
+        "name": "cpu_usage",
+        "value": 90,
+        "timestamp": "2023-10-28T09:30:00Z"
+      }
+    ],
+    "transformations": [
+      {
+        "operationType": "GROUP",
+        "config": {
+          "grouperType": "DAY"
+        }
+      },
+      {
+        "operationType": "AGGREGATE",
+        "config": {
+          "aggregatorType": "SUM"
+        }
+      },
+      {
+          "operationType": "FILTER",
+          "config": {
+            "filterType": "GT",
+            "filterTarget": "VALUE",
+            "threshold": 70
+          }
+        }
+    ]
+  }
+}

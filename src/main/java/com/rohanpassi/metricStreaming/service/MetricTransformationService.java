@@ -2,6 +2,7 @@ package com.rohanpassi.metricStreaming.service;
 
 import com.rohanpassi.metricStreaming.dto.Metric;
 import com.rohanpassi.metricStreaming.dto.Transformation;
+import com.rohanpassi.metricStreaming.transformations.aggregator.AggregatorFactory;
 import com.rohanpassi.metricStreaming.transformations.aggregator.MetricAggregator;
 import com.rohanpassi.metricStreaming.transformations.filter.FilterFactory;
 import com.rohanpassi.metricStreaming.transformations.filter.MetricFilter;
@@ -24,39 +25,39 @@ public class MetricTransformationService {
     private GrouperFactory grouperFactory;
 
     @Autowired
-    private MetricAggregator metricAggregator;
+    private AggregatorFactory aggregatorFactory;
 
-    public List<Metric> transform(List<Metric> metrics, List<Transformation> transformations) {
+    public Object transform(List<Metric> metrics, List<Transformation> transformations) {
         List<MetricFilter> filters = new ArrayList<>();
-        MetricGrouper grouper;
-        MetricAggregator aggregator;
+        MetricGrouper grouper = null;
+        MetricAggregator aggregator = null;
 
-        for(Transformation transformation : transformations){
-            switch (transformation.getOperationType()){
+        for (Transformation transformation : transformations) {
+            switch (transformation.getOperationType()) {
                 case FILTER:
                     filters.add(filterFactory.getFilter(transformation.getConfig()));
                     break;
                 case GROUP:
                     grouper = grouperFactory.getGrouper(transformation.getConfig());
                     break;
-                // case AGGREGATE:
-                //     aggregator = createAggregator(transformation.getConfig());
-                //     break;
+                case AGGREGATE:
+                    aggregator = aggregatorFactory.getAggregator(transformation.getConfig());
+                    break;
                 default:
                     throw new IllegalArgumentException("Unsupported transformation type: " + transformation.getOperationType());
             }
         }
-        //1. Apply filters
+
+        // Apply filters
         metrics = applyFilters(metrics, filters);
 
-        //2. Apply grouping
-        Map<String, List<Metric>> groupedMetrics = applyGrouping(metrics, grouper);
-        // metrics = groupedMetrics.values().stream().flatMap(List::stream).collect(Collectors.toList());
+        // Apply grouping
+        Object groupedMetrics = applyGrouping(metrics, grouper);
 
-        // //3. Apply aggregation
-        // return applyAggregation(metrics, groupers, aggregators);
+        // Apply aggregation
+        Object finalResult = applyAggregation(groupedMetrics, aggregator);
 
-        return metrics;
+        return finalResult;
     }
 
     public List<Metric> applyFilters(List<Metric> metrics, List<MetricFilter> filters) {
@@ -70,17 +71,25 @@ public class MetricTransformationService {
         return metrics;
     }
 
-    public Map<String, List<Metric>> applyGrouping(List<Metric> metrics, MetricGrouper grouper) {
+    public Object applyGrouping(List<Metric> metrics, MetricGrouper grouper) {
         if (grouper == null) {
-            return Map.of("default", metrics); // Treat all metrics as one group
+            return metrics;
         }
         return grouper.group(metrics);
     }
 
-    public Object applyAggregation(List<Metric> metrics, MetricAggregator aggregator) {
-        if (aggregator == null) {
-            return Map.of(); // Return empty map if no aggregator is provided
+    public Object applyAggregation(Object metrics, MetricAggregator aggregator) {
+        if(metrics instanceof List){
+            if(aggregator == null){
+                return metrics;
+            }
+            return aggregator.aggregate((List<Metric>) metrics);
         }
-        return aggregator.aggregate(metrics);
+        else{
+            if (aggregator == null) {
+                return metrics;
+            }
+            return aggregator.aggregate((Map<String, List<Metric>>)metrics);
+        }
     }
 }

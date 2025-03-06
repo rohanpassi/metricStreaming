@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import com.rohanpassi.metricStreaming.dto.Metric;
 
 @Component
-public class SumAggregator implements MetricAggregator {
+public class AverageAggregator implements MetricAggregator {
 
     @Override
     public Map<String, List<Metric>> aggregate(Map<String, List<Metric>> groupedMetrics) {
@@ -27,8 +27,8 @@ public class SumAggregator implements MetricAggregator {
             return List.of();
         }
 
-        Double sum = metrics.stream().mapToDouble(Metric::getValue).sum();
-        Metric aggregatedMetric = new Metric(sum, metrics.get(0).getTimestamp());
+        Double average = metrics.stream().mapToDouble(Metric::getValue).average().orElse(0.0);
+        Metric aggregatedMetric = new Metric(average, metrics.get(0).getTimestamp());
 
         List<Metric> result = new ArrayList<>();
         result.add(aggregatedMetric);

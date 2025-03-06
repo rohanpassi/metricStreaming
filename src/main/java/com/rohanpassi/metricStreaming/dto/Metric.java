@@ -5,6 +5,6 @@ import java.time.Instant;
 
 @Data
 public class Metric {
-    private final int value;
+    private final Double value;
     private final Instant timestamp;
 }

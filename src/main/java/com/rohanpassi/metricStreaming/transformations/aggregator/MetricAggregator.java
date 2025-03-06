@@ -6,6 +6,6 @@ import java.util.Map;
 import com.rohanpassi.metricStreaming.dto.Metric;
 
 public interface MetricAggregator {
-    int aggregate(Map<String, List<Metric>> groupedMetrics);
-    int aggregate(List<Metric> metrics);
+    Map<String, List<Metric>> aggregate(Map<String, List<Metric>> metrics);
+    List<Metric> aggregate(List<Metric> metrics);
 }
