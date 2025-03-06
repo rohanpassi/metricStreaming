@@ -26,5 +26,4 @@ public class AggregatorFactory {
                 throw new IllegalArgumentException("Unsupported aggregator type: " + aggregatorType);
         }
     }
-
 }
