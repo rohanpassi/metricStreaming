@@ -31,7 +31,7 @@ public class FilterFactory {
                 Double threshold = Double.parseDouble(filterConfig.get("threshold").toString()) ;
                 return valueFilterFactory.getFilter(filterType, threshold);
             case TIMESTAMP:
-                Instant timestamp = Instant.parse((String) filterConfig.get("timestamp"));
+                Instant timestamp = Instant.parse(filterConfig.get("timestamp").toString());
                 return timestampFilterFactory.getFilter(filterType, timestamp);
             default:
             throw new IllegalArgumentException("Unsupported filter target: " + filterTarget);
