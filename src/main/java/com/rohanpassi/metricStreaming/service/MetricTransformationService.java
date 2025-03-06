@@ -38,9 +38,15 @@ public class MetricTransformationService {
                     filters.add(filterFactory.getFilter(transformation.getConfig()));
                     break;
                 case GROUP:
+                    if(grouper != null){
+                        throw new IllegalArgumentException("Only one grouper is allowed");
+                    }
                     grouper = grouperFactory.getGrouper(transformation.getConfig());
                     break;
                 case AGGREGATE:
+                    if(aggregator != null){
+                        throw new IllegalArgumentException("Only one aggregator is allowed");
+                    }
                     aggregator = aggregatorFactory.getAggregator(transformation.getConfig());
                     break;
                 default:
