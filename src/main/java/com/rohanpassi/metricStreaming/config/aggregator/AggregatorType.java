@@ -5,4 +5,5 @@ public enum AggregatorType {
     AVG,
     MAX,
     MIN
+    // Add more aggregator types as needed
 }

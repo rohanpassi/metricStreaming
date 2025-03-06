@@ -19,19 +19,19 @@ public class FilterFactory {
     private TimestampFilterFactory timestampFilterFactory;
 
 
-    public MetricFilter getFilter(Map<String, Object> filterConfig) {
-        String filterTypeString = filterConfig.get("filterType").toString();
+    public MetricFilter getFilter(Map<String, String> filterConfig) {
+        String filterTypeString = filterConfig.get("filterType");
         FilterType filterType = FilterType.valueOf(filterTypeString);
 
-        String filterTargetString = filterConfig.get("filterTarget").toString();
+        String filterTargetString = filterConfig.get("filterTarget");
         FilterTarget filterTarget = FilterTarget.valueOf(filterTargetString);
 
         switch(filterTarget){
             case VALUE:
-                Double threshold = Double.parseDouble(filterConfig.get("threshold").toString()) ;
+                Double threshold = Double.parseDouble(filterConfig.get("threshold")) ;
                 return valueFilterFactory.getFilter(filterType, threshold);
             case TIMESTAMP:
-                Instant timestamp = Instant.parse(filterConfig.get("timestamp").toString());
+                Instant timestamp = Instant.parse(filterConfig.get("timestamp"));
                 return timestampFilterFactory.getFilter(filterType, timestamp);
             default:
             throw new IllegalArgumentException("Unsupported filter target: " + filterTarget);

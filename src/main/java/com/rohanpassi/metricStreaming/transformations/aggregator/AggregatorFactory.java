@@ -9,8 +9,8 @@ import com.rohanpassi.metricStreaming.config.aggregator.AggregatorType;
 @Component
 public class AggregatorFactory {
 
-    public MetricAggregator getAggregator(Map<String, Object> aggregatorConfig) {
-        String aggregatorTypeString = aggregatorConfig.get("aggregatorType").toString();
+    public MetricAggregator getAggregator(Map<String, String> aggregatorConfig) {
+        String aggregatorTypeString = aggregatorConfig.get("aggregatorType");
         AggregatorType aggregatorType = AggregatorType.valueOf(aggregatorTypeString);
 
         switch (aggregatorType) {

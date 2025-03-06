@@ -7,8 +7,8 @@ import com.rohanpassi.metricStreaming.config.grouper.GrouperType;
 
 @Component
 public class GrouperFactory {
-    public MetricGrouper getGrouper(Map<String, Object> grouperConfig) {
-        String grouperTypeString = grouperConfig.get("grouperType").toString();
+    public MetricGrouper getGrouper(Map<String, String> grouperConfig) {
+        String grouperTypeString = grouperConfig.get("grouperType");
         GrouperType grouperType = GrouperType.valueOf(grouperTypeString);
         switch (grouperType) {
             case MINUTE:
