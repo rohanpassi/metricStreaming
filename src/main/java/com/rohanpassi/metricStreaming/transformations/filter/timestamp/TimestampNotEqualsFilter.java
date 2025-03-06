@@ -1,23 +1,15 @@
 package com.rohanpassi.metricStreaming.transformations.filter.timestamp;
 
-import com.rohanpassi.metricStreaming.config.filter.TimestampFilterConfig;
-import com.rohanpassi.metricStreaming.dto.Metric;
-import com.rohanpassi.metricStreaming.transformations.filter.MetricFilter;
-
-import lombok.AllArgsConstructor;
-
 import java.time.Instant;
 
-@AllArgsConstructor
-public class TimestampNotEqualsFilter implements MetricFilter {
-    private final Instant timestamp;
+public class TimestampNotEqualsFilter extends TimestampFilter {
 
-    @Override
-    public boolean apply(Metric metric) {
-        return metric.getTimestamp().isAfter(timestamp) || metric.getTimestamp().isBefore(timestamp);
+    public TimestampNotEqualsFilter(Instant timestamp) {
+        super(timestamp);
     }
 
-    public TimestampNotEqualsFilter(TimestampFilterConfig config) {
-        this.timestamp = config.getTimestamp();
+    @Override
+    protected boolean compare(Instant metricTimestamp) {
+        return metricTimestamp.isAfter(timestamp) || metricTimestamp.isBefore(timestamp);
     }
 }

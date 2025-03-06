@@ -2,73 +2,38 @@ package com.rohanpassi.metricStreaming.transformations.filter;
 
 import java.time.Instant;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import com.rohanpassi.metricStreaming.config.filter.FilterTarget;
 import com.rohanpassi.metricStreaming.config.filter.FilterType;
-import com.rohanpassi.metricStreaming.config.filter.TimestampFilterConfig;
-import com.rohanpassi.metricStreaming.config.filter.ValueFilterConfig;
-import com.rohanpassi.metricStreaming.transformations.filter.timestamp.TimestampEqualsFilter;
-import com.rohanpassi.metricStreaming.transformations.filter.timestamp.TimestampGreaterThanEqualsFilter;
-import com.rohanpassi.metricStreaming.transformations.filter.timestamp.TimestampGreaterThanFilter;
-import com.rohanpassi.metricStreaming.transformations.filter.timestamp.TimestampLessThanEqualsFilter;
-import com.rohanpassi.metricStreaming.transformations.filter.timestamp.TimestampLessThanFilter;
-import com.rohanpassi.metricStreaming.transformations.filter.timestamp.TimestampNotEqualsFilter;
-import com.rohanpassi.metricStreaming.transformations.filter.value.ValueEqualsFilter;
-import com.rohanpassi.metricStreaming.transformations.filter.value.ValueGreaterThanEqualsFilter;
-import com.rohanpassi.metricStreaming.transformations.filter.value.ValueGreaterThanFilter;
-import com.rohanpassi.metricStreaming.transformations.filter.value.ValueLessThanEqualsFilter;
-import com.rohanpassi.metricStreaming.transformations.filter.value.ValueLessThanFilter;
-import com.rohanpassi.metricStreaming.transformations.filter.value.ValueNotEqualsFilter;
+import com.rohanpassi.metricStreaming.transformations.filter.timestamp.TimestampFilterFactory;
+import com.rohanpassi.metricStreaming.transformations.filter.value.ValueFilterFactory;
 
 @Component
 public class FilterFactory {
+
+    @Autowired
+    private ValueFilterFactory valueFilterFactory;
+
+    @Autowired
+    private TimestampFilterFactory timestampFilterFactory;
+
+
     public MetricFilter getFilter(Map<String, Object> filterConfig) {
-        String filterTypeString = (String) filterConfig.get("filterType");
+        String filterTypeString = filterConfig.get("filterType").toString();
         FilterType filterType = FilterType.valueOf(filterTypeString);
 
-        String filterTargetString = (String) filterConfig.get("filterTarget");
+        String filterTargetString = filterConfig.get("filterTarget").toString();
         FilterTarget filterTarget = FilterTarget.valueOf(filterTargetString);
 
-        if (filterTarget.equals(FilterTarget.VALUE)) {
-            ValueFilterConfig valueFilterConfig = new ValueFilterConfig(filterType, (int) filterConfig.get("threshold"));
-            switch (filterType) {
-                case GT:
-                    return new ValueGreaterThanFilter(valueFilterConfig);
-                case GTE:
-                    return new ValueGreaterThanEqualsFilter(valueFilterConfig);
-                case LT:
-                    return new ValueLessThanFilter(valueFilterConfig);
-                case LTE:
-                    return new ValueLessThanEqualsFilter(valueFilterConfig);
-                case EQ:
-                    return new ValueEqualsFilter(valueFilterConfig);
-                case NEQ:
-                    return new ValueNotEqualsFilter(valueFilterConfig);
-                default:
-                    throw new IllegalArgumentException("Unsupported filter type: " + filterType);
-            }
-        }
-        else if (filterTarget.equals(FilterTarget.TIMESTAMP)) {
-            TimestampFilterConfig timestampFilterConfig = new TimestampFilterConfig(filterType, (Instant) filterConfig.get("timestamp"));
-            switch (filterType) {
-                case GT:
-                    return new TimestampGreaterThanFilter(timestampFilterConfig);
-                case GTE:
-                    return new TimestampGreaterThanEqualsFilter(timestampFilterConfig);
-                case LT:
-                    return new TimestampLessThanFilter(timestampFilterConfig);
-                case LTE:
-                    return new TimestampLessThanEqualsFilter(timestampFilterConfig);
-                case EQ:
-                    return new TimestampEqualsFilter(timestampFilterConfig);
-                case NEQ:
-                    return new TimestampNotEqualsFilter(timestampFilterConfig);
-                default:
-                    throw new IllegalArgumentException("Unsupported filter type: " + filterType);
-            }
-        }
-        else {
+        switch(filterTarget){
+            case VALUE:
+                Double threshold = Double.parseDouble(filterConfig.get("threshold").toString()) ;
+                return valueFilterFactory.getFilter(filterType, threshold);
+            case TIMESTAMP:
+                Instant timestamp = Instant.parse((String) filterConfig.get("timestamp"));
+                return timestampFilterFactory.getFilter(filterType, timestamp);
+            default:
             throw new IllegalArgumentException("Unsupported filter target: " + filterTarget);
         }
     }
